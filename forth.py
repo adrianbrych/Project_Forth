@@ -79,8 +79,8 @@ class Interpreter:
         result = self.stack.pop()
         sys.stdout.write(str(result) + " ")
 
-    def cr(self, a):
-        print(a)
+    def cr(self):
+        print()
 
     def plus(self):
         x = float(self.stack.pop())
@@ -339,13 +339,15 @@ class ForthPy:
                 self.interpreter.interp(code)
                 if self.input.isatty() and self.interpreter.mode == Exec:
                     print("GOOD")
+                else:
+                    break
         except TypeError:
             print("ERROR")
 
 # Tests of interpreter
 
 
-def test():
+def test_math():
     s = "2 3 + . 3 4 ^ ."
     forth_interpreter = Interpreter()
     t = forth_interpreter.compile(s)
@@ -353,5 +355,55 @@ def test():
     forth_interpreter.interpretation(t)
 
 
+def test_variable():
+    forth_interpreter = Interpreter()
+    s = '19 variable a 3 a @ * . cr'
+    t = forth_interpreter.compile(s)
+    print(s, '->', t)
+    forth_interpreter.interpretation(t)
+
+
+def test_dup():
+    forth_interpreter = Interpreter()
+    s = '20 dup  . cr . cr'
+    t = forth_interpreter.compile(s)
+    print(s, '->', t)
+    forth_interpreter.interpretation(t)
+
+
+def test_swap():
+    s = '5 10 swap . cr . cr'
+    forth_interpreter = Interpreter()
+    t = forth_interpreter.compile(s)
+    print(s, '->', t)
+    forth_interpreter.interpretation(t)
+
+
+def test_forget_and_colon():
+    s = ': sq dup * ; 2 sq 3 sq 100 sq . cr . cr . cr'
+    forth_interpreter = Interpreter()
+    t = forth_interpreter.compile(s)
+    print(s, '->', t)
+    forth_interpreter.interpretation(t)
+
+
+def test_adding_new_word():
+    forth_interpreter = Interpreter()
+    s = '2 3 + . 3 4 ^ .'
+    t = forth_interpreter.compile(s)
+    print(s, '->', t)
+    forth_interpreter.interpretation(t)
+
+    forth_interpreter.stack.push(t)
+    forth_interpreter.stack.push('junk')
+    forth_interpreter.f_def()
+    forth_interpreter.interpretation(['junk'])
+
+
 if __name__ == "__main__":
-    test()
+    test_adding_new_word()
+    test_forget_and_colon()
+    test_swap()
+    test_dup()
+    test_variable()
+    test_math()
